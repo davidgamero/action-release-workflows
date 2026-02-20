@@ -22,7 +22,7 @@ on:
 
 jobs:
   release-proposal:
-    uses: davidgamero/action-release-workflow/.github/workflows/release-proposal.yaml@feature/release-proposal-workflow
+    uses: davidgamero/action-release-workflows/.github/workflows/release-proposal.yaml@feature/release-proposal-workflow
     with:
       version_type: ${{ inputs.version_type || '' }}
       changelog_path: ${{ inputs.changelog_path || './CHANGELOG.md' }}
