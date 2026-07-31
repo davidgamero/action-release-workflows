@@ -32,10 +32,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Normalize the branch input so callers may pass either a full ref
+      # (e.g. refs/heads/main) or a short branch name (e.g. main). The
+      # release action's `commit` input expects a branch name or commit
+      # hash, not a fully-qualified ref, so strip any refs/heads/ or
+      # refs/tags/ prefix. This keeps backwards compatibility with existing
+      # callers that pass ${{ github.ref }}.
+      - id: normalize
+        env:
+          INPUT_BRANCH: ${{ inputs.branch }}
+        run: |
+          branch="${INPUT_BRANCH#refs/heads/}"
+          branch="${branch#refs/tags/}"
+          echo "commit=${branch}" >> "$GITHUB_OUTPUT"
+
       - uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20.0
         with:
           name: ${{ inputs.version }}
           tag: ${{ inputs.version }}
           body: ${{ inputs.body }}
-          commit: refs/heads/${{ inputs.branch }}
+          commit: ${{ steps.normalize.outputs.commit }}
           prerelease: ${{ inputs.prerelease == 'prereleased' }}
